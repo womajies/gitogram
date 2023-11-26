@@ -92,7 +92,6 @@ export default {
 
 <style lang="scss" scoped>
 .topline {
-  margin-top: 45px;
   margin-bottom: 32px;
 
   .list {
