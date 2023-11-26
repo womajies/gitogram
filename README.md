@@ -1,5 +1,7 @@
 # gitogram
 
+* Посмотреть: [«gitogram»](https://womajies.github.io/gitogram/dist)
+
 ## Project setup
 ```
 npm install
