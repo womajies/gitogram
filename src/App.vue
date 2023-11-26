@@ -13,4 +13,4 @@ export default {
 }
 </script>
 
-<style src="./global.scss" lang="scss" scoped></style>
+<style src="./global.scss" lang="scss"></style>
