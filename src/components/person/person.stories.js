@@ -1,27 +1,23 @@
-import avatar from './avatar.vue'
+import person from './person.vue'
 
 export default {
-  title: 'Avatar',
-  component: { avatar }
+  title: 'Person',
+  component: { person }
 }
 
 export const DefaultView = () => ({
-  components: { avatar },
+  components: { person },
   template: `
-    <avatar
-      nickname="User Name"
-      src="https://loremflickr.com/300/300"
-      alt="User photo"
-    />
+    <person class="person" avatarImgSrc="https://picsum.photos/300/300" userName="Jhon Musa" />
   `
 })
 
 DefaultView.storyName = 'Стандартный вид'
 
 export const ActiveView = () => ({
-  components: { avatar },
+  components: { person },
   template: `
-    <avatar
+    <person
       nickname="User Name"
       src="https://loremflickr.com/300/300"
       alt="User photo"

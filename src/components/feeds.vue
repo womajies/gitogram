@@ -8,36 +8,48 @@
         </template>
         <template #content>
           <ul class="stories">
-            <li class="stories-item" v-for="{ id, avatar, username } in stories" :key="id">
-              <story-user-item :avatar="avatar" :username="username" @onPress="handlePress(id)" />
+            <li class="stories-item" v-for="{ id, owner } in trendings" :key="id">
+              <story-user-item
+                :avatar="owner.avatar_url"
+                :username="owner.login"
+                @onPress="$router.push({ name: 'storiesSlide', params: { initialSlide: id } })"
+              />
             </li>
           </ul>
         </template>
       </topline>
     </div>
-    <template v-for="item in items" :key="item.id">
-      <feed class="feed" :item="item" :commentsUrl="item.comments_url" :publicDate="item.updated_at">
-        <template #repo>
-          <h3 class="title">{{ item.name }}</h3>
-          <p class="text">{{ item.description }}</p>
-          <div class="actions">
-            <div class="actions-wrapper">
-              <button class="actions-btn">
-                <icon name="star" />
-                <span class="actions-btn__text">Star</span>
-              </button>
-              <div class="actions-count">{{ item.stargazers_count }}</div>
+    <div v-if="isLoading" class="loading">Loading...</div>
+    <template v-else>
+      <template v-for="item in trendings" :key="item.id">
+        <feed
+          class="feed"
+          :item="item"
+          :commentsUrl="item.comments_url"
+          :publicDate="item.updated_at"
+        >
+          <template #repo>
+            <h3 class="title">{{ item.name }}</h3>
+            <p class="text">{{ item.description }}</p>
+            <div class="actions">
+              <div class="actions-wrapper">
+                <button class="actions-btn">
+                  <icon name="star" />
+                  <span class="actions-btn__text">Star</span>
+                </button>
+                <div class="actions-count">{{ item.stargazers_count }}</div>
+              </div>
+              <div class="actions-wrapper">
+                <button class="actions-btn">
+                  <icon name="fork" />
+                  <span class="actions-btn__text">Fork</span>
+                </button>
+                <div class="actions-count">{{ item.forks_count }}</div>
+              </div>
             </div>
-            <div class="actions-wrapper">
-              <button class="actions-btn">
-                <icon name="fork" />
-                <span class="actions-btn__text">Fork</span>
-              </button>
-              <div class="actions-count">{{ item.forks_count }}</div>
-            </div>
-          </div>
-        </template>
-      </feed>
+          </template>
+        </feed>
+      </template>
     </template>
   </div>
 </template>
@@ -50,18 +62,12 @@ import logo from '@/components/logo.vue'
 import storyUserItem from '@/components/story-user-item.vue'
 import stories from './data.json'
 import feed from '@/components/feed.vue'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'Feeds',
 
   components: { topline, userActions, icon, logo, storyUserItem, feed },
-
-  props: {
-    items: {
-      type: Object,
-      required: true
-    }
-  },
 
   data () {
     return {
@@ -69,10 +75,21 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      trendings: state => state.trendings.posts.data,
+      isLoading: state => state.trendings.posts.isLoading
+    })
+  },
+
   methods: {
-    handlePress () {
-      console.log('on press')
-    }
+    ...mapActions({
+      fetchTrendings: 'trendings/fetchTrendings'
+    })
+  },
+
+  async created () {
+    await this.fetchTrendings()
   }
 }
 </script>
@@ -95,6 +112,11 @@ export default {
     display: flex;
     gap: 43px;
   }
+}
+
+.loading {
+  width: 980px;
+  margin: 0 auto 24px;
 }
 
 .feed {
@@ -154,4 +176,3 @@ export default {
   }
 }
 </style>
-@/components/SliderItem/SliderItem.vue

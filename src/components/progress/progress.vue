@@ -1,5 +1,5 @@
 <template>
-  <div class="progress" :class="{ 'active': active }">
+  <div class="progress" :class="{ 'active': isActive }">
     <div ref="indicator" class="indicator"></div>
   </div>
 </template>
@@ -8,9 +8,15 @@
 export default {
   title: 'progress',
   emits: ['onFinish'],
+  props: {
+    active: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
-      active: false
+      isActive: this.active
     }
   },
   methods: {
@@ -18,20 +24,17 @@ export default {
       this.$emit('onFinish')
     }
   },
-  mounted () {
-    this.$nextTick(() => {
-      this.active = true
+  async mounted () {
+    await this.$nextTick().then(() => {
+      setTimeout(() => { this.isActive = true }, 0)
     })
 
-    this.$refs.indicator.addEventListener('transitionend', this.emitOnFinish)
+    if (this.$refs.indicator) {
+      this.$refs.indicator.addEventListener('transitionend', this.emitOnFinish)
+    }
   },
   beforeUnmount () {
-    this.active = false
-
-    this.$refs.indicator.removeEventListener(
-      'transitionend',
-      this.emitOnFinish
-    )
+    this.$refs.indicator.removeEventListener('transitionend', this.emitOnFinish)
   }
 }
 </script>
@@ -44,12 +47,6 @@ export default {
   position: relative;
   overflow: hidden;
 
-  &.active {
-    .indicator {
-      width: 100%;
-    }
-  }
-
   .indicator {
     position: absolute;
     top: 0;
@@ -57,7 +54,13 @@ export default {
     left: 0;
     width: 0%;
     background: #31ae54;
-    transition: 5s width ease;
+    transition: 5s width linear;
+  }
+
+  &.active {
+    .indicator {
+      width: 100%;
+    }
   }
 }
 </style>

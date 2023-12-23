@@ -1,32 +1,16 @@
 <template>
   <div>
-    <Feeds :items="items" />
+    <feeds />
   </div>
 </template>
 
 <script>
-import Feeds from '@/components/feeds.vue'
-import * as api from '../api'
+import feeds from '@/components/feeds.vue'
 
 export default {
   name: 'FeedsPage',
 
-  components: { Feeds },
-
-  data () {
-    return {
-      items: []
-    }
-  },
-
-  async created () {
-    try {
-      const { data } = await api.trendings.getTrendings()
-      this.items = data.items
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  components: { feeds }
 }
 </script>
 
