@@ -1,6 +1,6 @@
 # gitogram
 
-* Посмотреть: [«gitogram»](https://womajies.github.io/gitogram/dist)
+* Посмотреть: [«gitogram»](https://womajies.github.io/gitogram/)
 
 ## Project setup
 ```
