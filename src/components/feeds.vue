@@ -3,7 +3,7 @@
     <div class="topline">
       <topline>
         <template #headline>
-          <logo />
+          <logo class="logo" />
           <user-actions />
         </template>
         <template #content>
@@ -106,6 +106,10 @@ export default {
     &-item {
       display: flex;
     }
+  }
+
+  .logo {
+    color: #000000;
   }
 
   .stories {
