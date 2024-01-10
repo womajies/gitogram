@@ -1,50 +1,105 @@
 <template>
-  <button class="button">
-    <span class="button-text--hover">{{ hoverText ? hoverText : 'Unfollow' }}</span>
-    <span class="button-text">
-      <slot>Following</slot>
-    </span>
+  <button
+    class="button"
+    :class="{ loading: loading, disable: disabled }"
+    :disabled="disabled"
+    @mouseover="onMouseover"
+    @mouseleave="onMouseleave"
+  >
+    <Spinner v-if="loading" />
+    <template v-else>
+      <span class="button__txt">
+        <slot v-if="!isHover || !hoverText"></slot>
+        <span v-if="isHover && hoverText">{{ hoverText }}</span>
+      </span>
+      <span v-if="icon" class="button__icon">
+        <slot name="button-icon"></slot>
+      </span>
+    </template>
   </button>
 </template>
 
 <script>
+import Spinner from '../spinner'
+
 export default {
-  title: 'uButton',
+  name: 'Button',
+  components: { Spinner },
+  emits: ['onMouseover', 'onMouseleave'],
+  data () {
+    return {
+      isHover: false
+    }
+  },
   props: {
     hoverText: {
-      type: String
+      type: String,
+      required: false
+    },
+    icon: {
+      type: Boolean,
+      default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    onMouseover () {
+      this.isHover = true
+      this.$emit('onMouseover', this.isHover)
+    },
+    onMouseleave () {
+      this.isHover = false
+      this.$emit('onMouseleave', this.isHover)
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .button {
-  min-width: 270px;
-  min-height: 44px;
-  display: flex;
+  min-width: 260px;
+  height: 44px;
+  background: #31ae54;
+  border-radius: 6px;
+  border: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  outline: none;
-  border: none;
-  border-radius: 4px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0 16px;
   cursor: pointer;
-  color: #ffff;
-  background-color: #31ae54;
-  transition: 0.3s ease background-color;
 
   &:hover {
-    background-color: gray;
-    .button-text--hover {
-      display: inline-block;
-    }
-    .button-text {
-      display: none;
-    }
+    background: #9e9e9e;
   }
 
-  &-text--hover {
-    display: none;
+  &__icon {
+    margin-left: 10px;
+  }
+
+  &.disable,
+  &[disabled] {
+    opacity: 0.8;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  &.loading {
+    .spinner {
+      width: 18px;
+      height: 18px;
+    }
+    svg {
+      color: #ffffff;
+    }
   }
 }
 </style>

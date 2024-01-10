@@ -15,7 +15,7 @@ export const getTrendings = (lang = 'javascript') => {
 
   params.append('order', 'desc')
   params.append('sort', 'stars')
-  params.append('per_page', 10)
+  params.append('per_page', 30)
   params.append('q', `language:${lang} created:>${formattedDate}`)
 
   return makeRequest({

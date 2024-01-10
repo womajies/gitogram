@@ -65,6 +65,7 @@ export default {
     color: #000;
     font-size: 12px;
     line-height: 10px;
+    word-break: break-all;
     transition: color .3s ease;
   }
 }

@@ -33,6 +33,12 @@ export default {
   display: inline-flex;
   align-items: center;
   padding: 0;
+  color: #292929;
+  transition: 0.3s ease color;
+
+  &:hover {
+    color: #31AE54;
+  }
 
   &.active {
     .icon {
@@ -41,7 +47,6 @@ export default {
   }
 
   .text {
-    color: #292929;
     margin-right: 5px;
   }
 }

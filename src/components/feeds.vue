@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div style="padding-bottom: 48px;">
     <div class="topline">
       <topline>
         <template #headline>
           <logo class="logo" />
-          <user-actions />
+          <user-actions :avatar="user.avatar_url" />
         </template>
         <template #content>
           <ul class="stories">
-            <li class="stories-item" v-for="{ id, owner } in trendings" :key="id">
+            <li class="stories-item" v-for="{ id, owner } in getOnlyUnstarredRepos" :key="id">
               <story-user-item
                 :avatar="owner.avatar_url"
                 :username="owner.login"
@@ -21,15 +21,15 @@
     </div>
     <div v-if="isLoading" class="loading">Loading...</div>
     <template v-else>
-      <template v-for="item in trendings" :key="item.id">
+      <template v-for="item in starred" :key="item.id">
         <feed
           class="feed"
-          :item="item"
-          :commentsUrl="item.comments_url"
           :publicDate="item.updated_at"
+          :issues="item.issues"
+          @loadContent="loadIssues({ id: item.id, owner: item.owner.login, repo: item.name })"
         >
-          <template #repo>
-            <h3 class="title">{{ item.name }}</h3>
+        <template #repo>
+            <h3 class="title"><a class="title__link" :href="item.html_url">{{ item.name }}</a></h3>
             <p class="text">{{ item.description }}</p>
             <div class="actions">
               <div class="actions-wrapper">
@@ -60,9 +60,8 @@ import userActions from '@/components/user-actions.vue'
 import icon from '@/icons/icon.vue'
 import logo from '@/components/logo.vue'
 import storyUserItem from '@/components/story-user-item.vue'
-import stories from './data.json'
 import feed from '@/components/feed.vue'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Feeds',
@@ -71,25 +70,38 @@ export default {
 
   data () {
     return {
-      stories
+      issues: []
     }
   },
 
   computed: {
     ...mapState({
-      trendings: state => state.trendings.posts.data,
-      isLoading: state => state.trendings.posts.isLoading
-    })
+      trendings: state => state.trendings.trendings.data,
+      user: state => state.user.user.data,
+      isLoading: state => state.trendings.trendings.isLoading,
+      starred: state => state.starred.starred.data
+    }),
+
+    ...mapGetters(['getOnlyUnstarredRepos'])
   },
 
   methods: {
     ...mapActions({
-      fetchTrendings: 'trendings/fetchTrendings'
-    })
+      fetchTrendings: 'trendings/fetchTrendings',
+      fetchUser: 'user/fetchUser',
+      fetchStarred: 'starred/fetchStarred',
+      fetchIssues: 'starred/fetchIssuesForRepo'
+    }),
+
+    loadIssues ({ id, owner, repo }) {
+      this.fetchIssues({ id, owner, repo })
+    }
   },
 
-  async created () {
-    await this.fetchTrendings()
+  mounted () {
+    this.fetchTrendings()
+    this.fetchStarred()
+    this.fetchUser()
   }
 }
 </script>
@@ -115,6 +127,8 @@ export default {
   .stories {
     display: flex;
     gap: 43px;
+    overflow: hidden;
+    padding: 6px 0 0 6px;
   }
 }
 
@@ -130,6 +144,17 @@ export default {
     font-size: 26px;
     font-weight: 700;
     line-height: 28px;
+
+    &__link {
+      text-decoration: none;
+      color: inherit;
+      transition: 0.3s ease color;
+
+      &:hover {
+        color: blue;
+        text-decoration: underline;
+      }
+    }
   }
 
   .text {

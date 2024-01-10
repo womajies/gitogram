@@ -1,8 +1,8 @@
 <template>
   <div class="comment">
     <p>
-      <span class="username">{{ username }}</span>
-      {{ text }}
+      <span class="username">{{ username }}:<br></span>
+      <span class="text">{{ text }}</span>
     </p>
   </div>
 </template>
@@ -25,10 +25,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.comment {
+  margin-top: 24px;
+}
 p {
   color: #404040;
 }
 .username {
   font-weight: 700;
+}
+.text {
+  display: inline-block;
+  text-indent: 24px;
 }
 </style>

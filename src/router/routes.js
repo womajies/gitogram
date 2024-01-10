@@ -1,8 +1,9 @@
-import feeds from '../pages/feeds'
-import user from '../pages/user'
-import stories from '../pages/stories'
-import profile from '../pages/profile'
-import notFound from '../pages/not-found'
+import feeds from '../views/feeds'
+import user from '../views/user'
+import auth from '../views/auth'
+import stories from '../views/stories'
+import profile from '../views/profile'
+import notFound from '../views/not-found'
 
 export default [
   {
@@ -11,6 +12,12 @@ export default [
     components: {
       default: feeds
     }
+  },
+  {
+    path: '/auth',
+    component: auth,
+    name: 'auth',
+    props: true
   },
   {
     path: '/user',

@@ -2,9 +2,7 @@
   <div class="c-storie" :class="{ active }">
     <div class="storie__header">
       <Progress v-if="active" @onFinish="$emit('onProgressFinish')" />
-      <person class="person"
-        :avatarImgSrc="data.userAvatar"
-        :userName="data.username" />
+      <person class="person" :avatarImgSrc="data.userAvatar" :userName="data.username" />
     </div>
     <div class="storie__content">
       <div v-if="loading" class="loader">
@@ -16,7 +14,13 @@
       </div>
     </div>
     <div class="storie__footer">
-      <Button>Following</Button>
+      <Button
+        :loading="data.following.loading"
+        :disabled="data.following.loading || !active"
+        @click="data.following.status ? $emit('onUnFollow', data.id) : $emit('onFollow', data.id)"
+      >
+        {{ data.following.status ? 'Unfollow' : 'Follow' }}
+      </Button>
     </div>
     <template v-if="active">
       <button v-if="buttonsShown.includes('next')" class="btn btn-next" @click="$emit('onNextSlide')">
@@ -51,7 +55,7 @@ export default {
     placeholder,
     icon
   },
-  emits: ['onNextSlide', 'onPrevSlide', 'onProgressFinish'],
+  emits: ['onNextSlide', 'onPrevSlide', 'onProgressFinish', 'onFollow', 'onUnFollow'],
   props: {
     active: Boolean,
     loading: Boolean,
@@ -104,6 +108,7 @@ export default {
   margin-left: -50%;
   transform: scale(0.8);
   transition: 0.4s ease;
+
   &.active {
     position: relative;
     z-index: 1;
@@ -150,8 +155,8 @@ export default {
     justify-content: center;
     align-items: center;
 
-    .c-button {
-      padding: 0.6875rem 6.8125rem;
+    .button {
+      padding: 0.6875rem 0;
     }
   }
 

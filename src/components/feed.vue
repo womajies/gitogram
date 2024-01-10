@@ -7,11 +7,15 @@
     <div class="toggler">
       <toggler @toggle="handleToggle" />
       <div class="comments" v-if="shown">
-        <ul class="comments-list">
-          <li class="comments-item" v-for="comment in comments" :key="comment">
-            <comment text="Some text" username="John Doe" />
+        <spinner v-if="shown && isLoading" />
+        <ul v-if="issues?.length > 0" class="comments-list">
+          <li class="comments-item" v-for="issue in issues" :key="issue?.id">
+            <comment :text="issue?.body" :username="issue?.user.login" />
           </li>
         </ul>
+        <div v-if="!isLoading && issues?.length === 0">
+          Нет комментариев
+        </div>
       </div>
     </div>
 
@@ -22,30 +26,38 @@
 <script>
 import toggler from '@/components/toggler.vue'
 import comment from '@/components/comment.vue'
-import * as api from '../api'
+import spinner from '@/components/spinner.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'FeedItem',
 
-  components: { toggler, comment },
+  components: { toggler, comment, spinner },
 
   props: {
-    item: {
-      type: Object,
-      required: true
+    publicDate: {
+      type: String,
+      required: false
+    },
+    issues: {
+      type: Array,
+      default: () => { return [] }
     }
   },
 
   data () {
     return {
-      shown: false,
-      comments: []
+      shown: false
     }
   },
 
   computed: {
+    ...mapState({
+      isLoading: state => state.starred.issues.isLoading
+    }),
+
     convertedDate: function () {
-      const localDate = new Date(this.item.updated_at)
+      const localDate = new Date(this.publicDate)
       const resultDate = localDate.toLocaleString('en-US', { month: 'long', day: 'numeric' })
 
       return resultDate
@@ -57,16 +69,7 @@ export default {
       this.shown = isOpened
 
       if (isOpened) {
-        this.getComments()
-      }
-    },
-
-    async getComments () {
-      try {
-        const { data } = await api.comments.getComments(this.item)
-        this.comments = data.items
-      } catch (error) {
-        console.error(error)
+        this.$emit('loadContent')
       }
     }
   }

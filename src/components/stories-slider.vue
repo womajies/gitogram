@@ -11,6 +11,8 @@
             @onNextSlide="handleSlideClick(index + 1)"
             @onPrevSlide="handleSlideClick(index - 1)"
             @onProgressFinish="handleSlideClick(index === trendings.length - 1 ? 0 : index + 1)"
+            @onFollow="starRepo"
+            @onUnFollow="unStarRepo"
           />
         </li>
       </ul>
@@ -46,7 +48,7 @@ export default {
 
   computed: {
     ...mapState({
-      trendings: state => state.trendings.posts.data
+      trendings: state => state.trendings.trendings.data
     }),
 
     activeButtons () {
@@ -60,7 +62,9 @@ export default {
   methods: {
     ...mapActions({
       fetchTrendings: 'trendings/fetchTrendings',
-      fetchReadme: 'trendings/fetchReadme'
+      fetchReadme: 'trendings/fetchReadme',
+      starRepo: 'trendings/starRepo',
+      unStarRepo: 'trendings/unStarRepo'
     }),
 
     getStoryData (obj) {
@@ -68,7 +72,8 @@ export default {
         id: obj.id,
         userAvatar: obj.owner?.avatar_url,
         username: obj.owner?.login,
-        content: obj.readme
+        content: obj.readme,
+        following: obj.following
       }
     },
 
