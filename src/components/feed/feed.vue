@@ -6,14 +6,14 @@
     </div>
     <div class="toggler">
       <toggler @toggle="handleToggle" />
-      <div class="comments" v-if="shown">
-        <spinner v-if="shown && isLoading" />
-        <ul v-if="issues?.length > 0" class="comments-list">
+      <div class="comments" v-if="opened">
+        <placeholder v-if="isLoading" :paragraphs="3" simple></placeholder>
+        <ul v-if="issues?.length" class="comments-list">
           <li class="comments-item" v-for="issue in issues" :key="issue?.id">
-            <comment :text="issue?.body" :username="issue?.user.login" />
+            <comment v-if="issue?.body" :text="issue?.body" :username="issue?.user.login" />
           </li>
         </ul>
-        <div v-if="!isLoading && issues?.length === 0">
+        <div v-if="!isLoading && !issues?.length">
           Нет комментариев
         </div>
       </div>
@@ -24,15 +24,16 @@
 </template>
 
 <script>
-import toggler from '@/components/toggler.vue'
+import toggler from '@/components/toggler/toggler.vue'
 import comment from '@/components/comment.vue'
-import spinner from '@/components/spinner.vue'
+import placeholder from '@/components/placeholder.vue'
 import { mapState } from 'vuex'
+import { ref } from 'vue'
 
 export default {
   name: 'FeedItem',
 
-  components: { toggler, comment, spinner },
+  components: { toggler, comment, placeholder },
 
   props: {
     publicDate: {
@@ -45,9 +46,20 @@ export default {
     }
   },
 
-  data () {
+  setup (props, { emit }) {
+    const opened = ref(false)
+
+    const handleToggle = (isOpened) => {
+      opened.value = isOpened
+
+      if (isOpened && props.issues.length === 0) {
+        emit('loadContent')
+      }
+    }
+
     return {
-      shown: false
+      opened,
+      handleToggle
     }
   },
 
@@ -61,16 +73,6 @@ export default {
       const resultDate = localDate.toLocaleString('en-US', { month: 'long', day: 'numeric' })
 
       return resultDate
-    }
-  },
-
-  methods: {
-    handleToggle (isOpened) {
-      this.shown = isOpened
-
-      if (isOpened) {
-        this.$emit('loadContent')
-      }
     }
   }
 }

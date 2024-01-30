@@ -13,6 +13,8 @@ import icon from '@/icons/icon.vue'
 export default {
   components: { icon },
 
+  emits: ['toggle'],
+
   data () {
     return {
       isOpened: false

@@ -60,48 +60,41 @@ import userActions from '@/components/user-actions.vue'
 import icon from '@/icons/icon.vue'
 import logo from '@/components/logo.vue'
 import storyUserItem from '@/components/story-user-item.vue'
-import feed from '@/components/feed.vue'
-import { mapActions, mapState, mapGetters } from 'vuex'
+import feed from '@/components/feed/feed.vue'
+import { useStore } from 'vuex'
+import { onMounted, computed } from 'vue'
 
 export default {
   name: 'Feeds',
 
   components: { topline, userActions, icon, logo, storyUserItem, feed },
 
+  setup () {
+    const { dispatch, state, getters } = useStore()
+    const loadIssues = ({ id, owner, repo }) => {
+      dispatch('starred/fetchIssuesForRepo', { id, owner, repo })
+    }
+
+    onMounted(() => {
+      dispatch('trendings/fetchTrendings')
+      dispatch('starred/fetchStarred')
+      dispatch('user/fetchUser')
+    })
+
+    return {
+      trendings: computed(() => state.trendings.trendings.data),
+      user: computed(() => state.user.user.data),
+      isLoading: computed(() => state.trendings.trendings.isLoading),
+      starred: computed(() => state.starred.starred.data),
+      getOnlyUnstarredRepos: computed(() => getters.getOnlyUnstarredRepos),
+      loadIssues
+    }
+  },
+
   data () {
     return {
       issues: []
     }
-  },
-
-  computed: {
-    ...mapState({
-      trendings: state => state.trendings.trendings.data,
-      user: state => state.user.user.data,
-      isLoading: state => state.trendings.trendings.isLoading,
-      starred: state => state.starred.starred.data
-    }),
-
-    ...mapGetters(['getOnlyUnstarredRepos'])
-  },
-
-  methods: {
-    ...mapActions({
-      fetchTrendings: 'trendings/fetchTrendings',
-      fetchUser: 'user/fetchUser',
-      fetchStarred: 'starred/fetchStarred',
-      fetchIssues: 'starred/fetchIssuesForRepo'
-    }),
-
-    loadIssues ({ id, owner, repo }) {
-      this.fetchIssues({ id, owner, repo })
-    }
-  },
-
-  mounted () {
-    this.fetchTrendings()
-    this.fetchStarred()
-    this.fetchUser()
   }
 }
 </script>

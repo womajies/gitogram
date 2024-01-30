@@ -26,7 +26,7 @@ export default {
 
 <style lang="scss" scoped>
 .comment {
-  margin-top: 24px;
+  margin: 12px 0;
 }
 p {
   color: #404040;

@@ -6,7 +6,7 @@
     </div>
   </div>
   <div class="placeholder" v-else>
-    <div class="placeholder__line"></div>
+    <div class="placeholder__line" v-for="item in paragraphs" :key="item"></div>
   </div>
 </template>
 
@@ -73,11 +73,12 @@ export default {
   }
 
   &__line {
+    width: 70%;
     height: 14px;
+    margin-top: 8px;
     background-image: linear-gradient(90deg, #EAEAEA 0px, #cccccc 50%, #EAEAEA 100%);
     background-size: 600px;
     animation: shine-lines 2.6s infinite linear;
-    width: 70%;
     border-radius: 4px;
   }
 }
